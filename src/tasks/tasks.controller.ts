@@ -33,15 +33,15 @@ export class TasksController {
       return this.tasksService.createTask(createTaskDto);
     }
    //
-   //  @Patch('/:id/status')
-   //  updateTaskStatus(
-   //      @Param('id') id: string,
-   //      @Body() updateTaskStatusDto: UpdateTaskStatusDto,
-   //  ): Task {
-   //     const { status } = updateTaskStatusDto;
-   //     return this.tasksService.updateTaskStatus(id, status);
-   //  }
-   //
+    @Patch('/:id/status')
+    updateTaskStatus(
+        @Param('id') id: string,
+        @Body() updateTaskStatusDto: UpdateTaskStatusDto,
+    ): Promise<Task> {
+       const { status } = updateTaskStatusDto;
+       return this.tasksService.updateTaskStatus(id, status);
+    }
+
     @Delete('/:id')
     deleteTask(@Param('id') id: string): Promise<void> {
        return this.tasksService.deleteTask(id);
