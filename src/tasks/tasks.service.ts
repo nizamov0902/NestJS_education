@@ -10,7 +10,7 @@ import {Task} from "./task.entity";
 export class TasksService {
     constructor(
         @InjectRepository(TasksRepository)
-        private taskRepository: TasksRepository,
+        private tasksRepository: TasksRepository,
     ) {}
     // private tasks: Task[] = [];
 
@@ -42,7 +42,8 @@ export class TasksService {
     //
     async getTaskById(id: string): Promise<Task> {
         // @ts-ignore
-        const found = await this.taskRepository.findOne(id);
+        let found: any;
+        found = await this.tasksRepository.findOne(id);
 
         if (!found) {
             throw new NotFoundException(`Task with ID ${id} not found`);
@@ -60,6 +61,9 @@ export class TasksService {
     //    return found;
     // }
     //
+    createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+        return this.tasksRepository.createTask(createTaskDto);
+        }
     // createTask(createTaskDto: CreateTaskDto): Task {
     //     const { title, description } = createTaskDto;
     //
