@@ -42,10 +42,10 @@ export class TasksController {
    //     return this.tasksService.updateTaskStatus(id, status);
    //  }
    //
-   //  @Delete('/:id')
-   //  deleteTask(@Param('id') id: string): void {
-   //     return this.tasksService.deleteTask(id);
-   //  }
+    @Delete('/:id')
+    deleteTask(@Param('id') id: string): Promise<void> {
+       return this.tasksService.deleteTask(id);
+    }
 
 }
 
