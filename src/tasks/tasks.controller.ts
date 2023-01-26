@@ -15,7 +15,7 @@ import { Logger } from "@nestjs/common";
 export class TasksController {
   private logger = new Logger('TasksController');
 
-    constructor(private tasksService: TasksService) {};
+    constructor(private tasksService: TasksService,) {};
 
    @Get()
    getTasks(
