@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload.interface';
 import { UserService } from '../user.service';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class AuthService {
@@ -13,12 +14,9 @@ export class AuthService {
     //@InjectRepository(UsersRepository)
     //private usersRepository: UsersRepository,
     private userService: UserService,
+    private prisma: PrismaService,
     private jwtService: JwtService,
   ) {}
-
-  // async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-  //return this.usersRepository.createUser(authCredentialsDto);
-  //}
 
   async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
     return this.userService.createUser(authCredentialsDto);
@@ -38,4 +36,23 @@ export class AuthService {
   //    throw new UnauthorizedException('Please check your login credentials');
   //  }
   //}
+
+  async signIn(
+    authCredentialsDto: AuthCredentialsDto,
+  ): Promise<{ accessToken: string }> {
+    const { username, password } = authCredentialsDto;
+    const user = await this.prisma.user.findUnique({
+      where: {
+        username,
+      },
+    });
+
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const payload: JwtPayload = { username };
+      const accessToken: string = await this.jwtService.sign(payload);
+      return { accessToken };
+    } else {
+      throw new UnauthorizedException('Please check your login credentials');
+    }
+  }
 }
