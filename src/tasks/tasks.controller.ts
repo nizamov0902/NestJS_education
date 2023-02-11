@@ -19,19 +19,26 @@ import { AuthGuard } from '@nestjs/passport';
 import { User } from '../auth/user.entity';
 import { GetUser } from '../auth/get-user.decorator';
 import { Logger } from '@nestjs/common';
+import { task } from '@prisma/client';
+import { PrismaService } from '../prisma.service';
+import { TasksPrismaService } from '../tasks-prisma.service';
 
 @Controller('tasks')
 @UseGuards(AuthGuard())
 export class TasksController {
   private logger = new Logger('TasksController');
 
-  constructor(private tasksService: TasksService) {}
+  constructor(
+    private tasksService: TasksService,
+    private prismaService: PrismaService,
+    private tasksPrismaService: TasksPrismaService,
+  ) {}
 
   @Get()
   getTasks(
     @Query() filterDto: GetTasksFilterDto,
     @GetUser() user: User,
-  ): Promise<Task[]> {
+  ): Promise<task[]> {
     this.logger.verbose(
       `User "${user.username}" retrieving all tasks. Filters: ${JSON.stringify(
         filterDto,
@@ -56,7 +63,7 @@ export class TasksController {
   createTask(
     @Body() createTaskDto: CreateTaskDto,
     @GetUser() user: User,
-  ): Promise<Task> {
+  ): Promise<task> {
     this.logger.verbose(
       `User "${user.username}" creating a new task. The title is: "${createTaskDto.title}", the description is: "${createTaskDto.description}"`,
     );

@@ -6,16 +6,22 @@ import { TasksRepository } from './tasks.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './task.entity';
 import { User } from '../auth/user.entity';
+import { PrismaService } from '../prisma.service';
+import { TasksPrismaService } from '../tasks-prisma.service';
+import { task } from '@prisma/client';
+import { user } from '@prisma/client';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectRepository(TasksRepository)
     private tasksRepository: TasksRepository,
+    private prismaService: PrismaService,
+    private tasksPrismaService: TasksPrismaService,
   ) {}
 
-  getTasks(filterDto: GetTasksFilterDto, user: User): Promise<Task[]> {
-    return this.tasksRepository.getTasks(filterDto, user);
+  getTasks(filterDto: GetTasksFilterDto, user: user): Promise<task[]> {
+    return this.tasksPrismaService.getTasks(filterDto, user);
   }
 
   async getTaskById(id: string, user: User): Promise<Task> {
@@ -39,8 +45,8 @@ export class TasksService {
   //    return found;
   // }
   //
-  createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
-    return this.tasksRepository.createTask(createTaskDto, user);
+  createTask(createTaskDto: CreateTaskDto, user: user): Promise<task> {
+    return this.tasksPrismaService.createTask(createTaskDto, user);
   }
   // createTask(createTaskDto: CreateTaskDto): Task {
   //     const { title, description } = createTaskDto;
