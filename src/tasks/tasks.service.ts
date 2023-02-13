@@ -18,16 +18,30 @@ export class TasksService {
     private tasksRepository: TasksRepository,
     private prismaService: PrismaService,
     private tasksPrismaService: TasksPrismaService,
+    private prisma: PrismaService,
   ) {}
 
   getTasks(filterDto: GetTasksFilterDto, user: user): Promise<task[]> {
     return this.tasksPrismaService.getTasks(filterDto, user);
   }
 
-  async getTaskById(id: string, user: User): Promise<Task> {
+  async getTaskById(id: string, user: user): Promise<task> {
     let found: any;
     // eslint-disable-next-line prefer-const
-    found = await this.tasksRepository.findOne({ where: { id, user } });
+    //found = await this.tasksRepository.findOne({ where: { id, user } });
+    // eslint-disable-next-line prefer-const
+    found = await this.prisma.task.findFirst({
+      where: {
+        AND: [
+          {
+            userId: user.id,
+          },
+          {
+            id: id,
+          },
+        ],
+      },
+    });
 
     if (!found) {
       throw new NotFoundException(`Task with ID ${id} not found`);
@@ -66,13 +80,22 @@ export class TasksService {
   async updateTaskStatus(
     id: string,
     status: TaskStatus,
-    user: User,
-  ): Promise<Task> {
-    const task = await this.getTaskById(id, user);
+    user: user,
+  ): Promise<task> {
+    //const task = await this.getTaskById(id, user);
 
-    task.status = status;
-    await this.tasksRepository.save(task);
-    return task;
+    //task.status = status;
+    //await this.tasksRepository.save(task);
+    //TODO add user validation
+    const updatedTask = await this.prisma.task.update({
+      where: {
+        id: id,
+      },
+      data: {
+        status: status,
+      },
+    });
+    return updatedTask;
   }
 
   // updateTaskStatus(id: string, status: TaskStatus) {
@@ -81,7 +104,7 @@ export class TasksService {
   //     return task;
   // }
 
-  async deleteTask(id: string, user: User): Promise<void> {
+  async deleteTask(id: string, user: user): Promise<void> {
     //.remove() method
     // let found: any;
     // found = await this.tasksRepository.findOne(id);
@@ -93,9 +116,20 @@ export class TasksService {
     // await this.tasksRepository.remove(found);
 
     //.delete() method
-    const result = await this.tasksRepository.delete({ id, user });
-
-    if (result.affected === 0) {
+    // const result = await this.tasksRepository.delete({ id, user });
+    const result = await this.prisma.task.deleteMany({
+      where: {
+        AND: [
+          {
+            id: id,
+          },
+          {
+            userId: user.id,
+          },
+        ],
+      },
+    });
+    if (result.count === 0) {
       throw new NotFoundException(`Task with ID ${id} not found`);
     }
   }

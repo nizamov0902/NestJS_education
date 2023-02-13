@@ -31,7 +31,20 @@ export class TasksPrismaService {
 
     const result = this.prisma.task.findMany({
       where: {
-        userId: user.id,
+        AND: [
+          {
+            userId: user.id,
+          },
+          {
+            status: status,
+          },
+          {
+            title: search,
+          },
+          {
+            description: search,
+          },
+        ],
       },
     });
     return result;
