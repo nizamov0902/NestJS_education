@@ -39,10 +39,20 @@ export class TasksPrismaService {
             status: status,
           },
           {
-            title: search,
-          },
-          {
-            description: search,
+            OR: [
+              {
+                description: {
+                  contains: search,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                title: {
+                  contains: search,
+                  mode: 'insensitive',
+                },
+              },
+            ],
           },
         ],
       },
