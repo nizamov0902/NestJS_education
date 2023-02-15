@@ -82,14 +82,17 @@ export class TasksService {
     status: TaskStatus,
     user: user,
   ): Promise<task> {
-    //const task = await this.getTaskById(id, user);
+    const userTask = await this.getTaskById(id, user);
+
+    if (!userTask) {
+      throw new NotFoundException(`Task with ID ${id} not found`);
+    }
 
     //task.status = status;
     //await this.tasksRepository.save(task);
-    //TODO add user validation
     const updatedTask = await this.prisma.task.update({
       where: {
-        id: id,
+        id: userTask.id,
       },
       data: {
         status: status,
