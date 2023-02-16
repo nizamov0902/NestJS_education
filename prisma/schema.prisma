@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model task {
+  id          String  @id(map: "PK_fb213f79ee45060ba925ecd576e") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  title       String  @db.VarChar
+  description String  @db.VarChar
+  status      String  @db.VarChar
+  userId      String? @db.Uuid
+  user        user?   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_f316d3fe53497d4d8a2957db8b9")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model typeorm_metadata {
+  type     String  @db.VarChar
+  database String? @db.VarChar
+  schema   String? @db.VarChar
+  table    String? @db.VarChar
+  name     String? @db.VarChar
+  value    String?
+
+  @@ignore
+}
+
+model user {
+  id       String @id(map: "PK_cace4a159ff9f2512dd42373760") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  username String @unique(map: "UQ_78a916df40e02a9deb1c4b75edb") @db.VarChar
+  password String @db.VarChar
+  task     task[]
+}

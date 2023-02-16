@@ -7,6 +7,8 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserService } from '../user.service';
+import { PrismaService } from '../prisma.service';
 
 @Module({
   imports: [
@@ -24,7 +26,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
     TypeOrmModule.forFeature([UsersRepository]),
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, PrismaService, UserService],
   controllers: [AuthController],
   exports: [JwtStrategy, PassportModule],
 })
